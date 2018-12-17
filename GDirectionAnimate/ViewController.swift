@@ -25,7 +25,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         
-        Alamofire.request("https://maps.googleapis.com/maps/api/directions/json?origin=22.84122,88.091615&destination=tarakeswar&key=AIzaSyBBdOOBplgXq9Uvd3i5c1UbjxLNEUnaHbo").responseJSON { response in
+        Alamofire.request("https://maps.googleapis.com/maps/api/directions/json?origin=22.84122,88.091615&destination=rajarhat&key=AIzaSyBBdOOBplgXq9Uvd3i5c1UbjxLNEUnaHbo").responseJSON { response in
             print("Request: \(String(describing: response.request))")   // original url request
             print("Response: \(String(describing: response.response))") // http url response
             print("Result: \(response.result)")                         // response serialization result
@@ -45,7 +45,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             guard let overviewPolyline = routes[0]["overview_polyline"] as? [String : Any] else {
                 return
             }
-            //print(overviewPolyline["points"])
+            
             let path = GMSPath(fromEncodedPath: overviewPolyline["points"] as! String)
             
             let singleLine:GMSPolyline = GMSPolyline(path: path)
@@ -53,51 +53,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             singleLine.strokeColor = UIColor.green
             singleLine.map = self.mapView
             
-            guard let legs = routes[0]["legs"] as? [[String : Any]] else {
-                return
-            }
-            
-            guard let steps = legs[0]["steps"] as? [[String : Any]] else {
-                return
-            }
-            
-            /*print(steps.count)
-            
-            for step in steps {
-                let startLocation = step["start_location"] as! [String : Any]
-                let endLocation = step["end_location"] as! [String : Any]
-                
-                let startLat = String(describing: startLocation["lat"]!)
-                let startLng = String(describing: startLocation["lng"]!)
-                
-                let endLat = String(describing: endLocation["lat"]!)
-                let endLng = String(describing: endLocation["lng"]!)
-                
-                print(Double(startLat)!)
-                
-                let startCoord = CLLocationCoordinate2D(latitude: Double(startLat)!, longitude: Double(startLng)!)
-                let endCoord = CLLocationCoordinate2D(latitude: Double(endLat)!, longitude: Double(endLng)!)
-                print(startCoord)
-                print(endCoord)
-                
-                self.stepsCoords.append(startCoord)
-                self.stepsCoords.append(endCoord)
-                
-                
-                print(self.stepsCoords.count)
-                
-                let coordinates: [CLLocationCoordinate2D]? = decodePolyline(overviewPolyline["points"] as! String)
-                
-                print(coordinates!.count)
-                
-            }
-            print(self.getHeadingForDirection(fromCoordinate: self.stepsCoords[0], toCoordinate: self.stepsCoords[1]))
-            
-            self.timer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true, block: { (_) in
-                self.payAnimation()
-            })
-            
-            RunLoop.current.add(self.timer, forMode: RunLoop.Mode.common)*/
             
             self.stepsCoords = decodePolyline(overviewPolyline["points"] as! String)!
             self.timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { (_) in
