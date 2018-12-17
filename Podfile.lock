@@ -5,20 +5,24 @@ PODS:
   - GoogleMaps/Base (2.5.0)
   - GoogleMaps/Maps (2.5.0):
     - GoogleMaps/Base
+  - Polyline (4.2.0)
 
 DEPENDENCIES:
   - Alamofire
   - GoogleMaps
+  - Polyline (~> 4.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
     - GoogleMaps
+    - Polyline
 
 SPEC CHECKSUMS:
   Alamofire: f41a599bd63041760b26d393ec1069d9d7b917f4
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
+  Polyline: 3d69f75bb136357e27291d439d0436c6ebda57a4
 
-PODFILE CHECKSUM: 0a094c11d755f9e8a44294209bd7dd0cc23f44e5
+PODFILE CHECKSUM: ba1e11c2627be38f78e7a2df5f203efc6099c5f8
 
 COCOAPODS: 1.5.3

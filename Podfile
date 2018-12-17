@@ -8,6 +8,7 @@ target 'GDirectionAnimate' do
   # Pods for GDirectionAnimate
   pod 'GoogleMaps'
   pod 'Alamofire'
+  pod 'Polyline', '~> 4.0'
   target 'GDirectionAnimateTests' do
     inherit! :search_paths
     # Pods for testing

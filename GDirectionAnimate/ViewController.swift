@@ -10,6 +10,7 @@ import UIKit
 import CoreLocation
 import GoogleMaps
 import Alamofire
+import Polyline
 class ViewController: UIViewController, CLLocationManagerDelegate {
     
     @IBOutlet weak var mapView: GMSMapView!
@@ -60,7 +61,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 return
             }
             
-            print(steps.count)
+            /*print(steps.count)
             
             for step in steps {
                 let startLocation = step["start_location"] as! [String : Any]
@@ -85,6 +86,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 
                 print(self.stepsCoords.count)
                 
+                let coordinates: [CLLocationCoordinate2D]? = decodePolyline(overviewPolyline["points"] as! String)
+                
+                print(coordinates!.count)
+                
             }
             print(self.getHeadingForDirection(fromCoordinate: self.stepsCoords[0], toCoordinate: self.stepsCoords[1]))
             
@@ -92,45 +97,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 self.payAnimation()
             })
             
+            RunLoop.current.add(self.timer, forMode: RunLoop.Mode.common)*/
+            
+            self.stepsCoords = decodePolyline(overviewPolyline["points"] as! String)!
+            self.timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { (_) in
+                self.playAnimation()
+            })
+            
             RunLoop.current.add(self.timer, forMode: RunLoop.Mode.common)
+            
             
         }
     }
-    func payAnimation(){
+    func playAnimation(){
         if iPosition <= self.stepsCoords.count - 1 {
             let position = self.stepsCoords[iPosition]
-            self.marker = GMSMarker(position: position)
+            self.marker?.position = position
+             mapView.camera = GMSCameraPosition(target: position, zoom: 15, bearing: 0, viewingAngle: 0)
             self.marker!.groundAnchor = CGPoint(x: CGFloat(0.5), y: CGFloat(0.5))
-            self.marker!.icon = self.imageWithImage(image: #imageLiteral(resourceName: "arrow"), scaledToSize: CGSize(width: 30.0, height: 30.0))
-            self.marker!.rotation = CLLocationDegrees(exactly: self.getHeadingForDirection(fromCoordinate: self.stepsCoords[iPosition], toCoordinate: self.stepsCoords[iPosition + 1]))!
-            self.marker!.map = self.mapView
-            CATransaction.begin()
-            CATransaction.setValue(Int(2.0), forKey: kCATransactionAnimationDuration)
-            
-            CATransaction.setCompletionBlock({() -> Void in
-                self.marker!.groundAnchor = CGPoint(x: CGFloat(0.5), y: CGFloat(0.5))
-                //self.marker!.rotation = CDouble(data.value(forKey: "bearing"))
-                
-            })
             if iPosition != self.stepsCoords.count - 1 {
-                self.marker!.position = self.stepsCoords[iPosition+1]
-                //this can be new position after car moved from old position to new position with animation
-                self.marker!.map = self.mapView
-                self.marker!.groundAnchor = CGPoint(x: CGFloat(0.5), y: CGFloat(0.5))
-                self.marker!.rotation = CLLocationDegrees(self.getHeadingForDirection(fromCoordinate: self.stepsCoords[iPosition], toCoordinate: self.stepsCoords[iPosition+1]))
+                self.marker!.rotation = CLLocationDegrees(exactly: self.getHeadingForDirection(fromCoordinate: self.stepsCoords[iPosition], toCoordinate: self.stepsCoords[iPosition+1]))!
             }
             
-            if iPosition == (self.stepsCoords.count - 1)
-            {
-                // timer close
+            
+            if iPosition == self.stepsCoords.count - 1 {
+                iPosition = 0;
                 timer.invalidate()
-                
-                iPosition = 0
             }
             
-            //CATransaction.commit()
             iPosition += 1
         }
+        
     }
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         
@@ -152,6 +149,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         
         locationManager.stopUpdatingLocation()
+        
+        let position = location.coordinate
+        self.marker = GMSMarker(position: position)
+        self.marker!.groundAnchor = CGPoint(x: CGFloat(0.5), y: CGFloat(0.5))
+        self.marker!.icon = self.imageWithImage(image: #imageLiteral(resourceName: "arrow"), scaledToSize: CGSize(width: 30.0, height: 30.0))
+        self.marker!.map = self.mapView
     }
     func imageWithImage(image:UIImage, scaledToSize newSize:CGSize) -> UIImage{
         UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
